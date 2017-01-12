@@ -72,38 +72,52 @@ bash_commons_meta_demonstration(){
 	touch "${testcase_path_regular_file}"
 
 	path_test_case_title_holder="bash_commons_test_if_file_exist"
+	local test_result_holder=1 # zero: passed; one: failed
 	printf "## %s() ##\n" "${path_test_case_title_holder}"
 	if bash_commons_test_if_file_exist "${testcase_path_regular_file}"; then
 		if ! bash_commons_test_if_file_exist "${testcase_path_regular_file}x"; then
-			printf "%s: passed\n" "${path_test_case_title_holder}"
+			test_result_holder=0
 		else
-			printf "%s: failed\n" "${path_test_case_title_holder}"
+			test_result_holder=1
 		fi
+	else
+		test_result_holder=1
+	fi
+	if [ $test_result_holder ]; then
+		printf "%s: passed\n" "${path_test_case_title_holder}"
 	else
 		printf "%s: failed\n" "${path_test_case_title_holder}"
 	fi
+	unset test_result_holder # Let program fail when reference is not valid
 
 	printf "\n"
 
 	path_test_case_title_holder="Test alias functions"
+	local test_result_holder=1 # zero: passed; one: failed
 	printf "## %s ##\n" "${path_test_case_title_holder}"
 	if bash_test_if_file_exist "${testcase_path_regular_file}"; then
 		if bc_test_if_file_exist "${testcase_path_regular_file}"; then
 			if bc_is_file_exist "${testcase_path_regular_file}"; then
 				if ! bc_is_file_exist "${testcase_path_regular_file}x"; then
-					printf "%s: passed\n" "${path_test_case_title_holder}"
+					test_result_holder=0
 				else
-					printf "%s: failed\n" "${path_test_case_title_holder}"
+					test_result_holder=1
 				fi
 			else
-				printf "%s: failed\n" "${path_test_case_title_holder}"
+				test_result_holder=1
 			fi
 		else
-			printf "%s: failed\n" "${path_test_case_title_holder}"
+			test_result_holder=1
 		fi
+	else
+		test_result_holder=1
+	fi
+	if [ $test_result_holder ]; then
+		printf "%s: passed\n" "${path_test_case_title_holder}"
 	else
 		printf "%s: failed\n" "${path_test_case_title_holder}"
 	fi
+	unset test_result_holder
 
 	# Cleanup
 	rm -rf "${path_test_cases}"
