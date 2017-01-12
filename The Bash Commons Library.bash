@@ -29,16 +29,27 @@ alias bash_test_if_file_exist=bash_commons_test_if_file_exist
 alias bc_test_if_file_exist=bash_commons_test_if_file_exist
 alias bc_is_file_exist=bash_commons_test_if_file_exist
 
-bash_commons_test_if_file_is_block_special_file(){
+bash_commons_test_if_file_block_special(){
 	local file_path="${1}"
 
 	test -b "${file_path}"
 	return
 }
-alias bash_test_if_file_is_block_special_file=bash_commons_test_if_file_is_block_special_file
-alias bc_test_if_file_is_block_special_file=bash_commons_test_if_file_is_block_special_file
-alias bc_is_file_block_special_file=bash_commons_test_if_file_is_block_special_file
-alias bc_is_file_block_special=bash_commons_test_if_file_is_block_special_file
+alias bash_test_if_file_block_special=bash_commons_test_if_file_block_special
+alias bc_test_if_file_block_special=bash_commons_test_if_file_block_special
+alias bc_is_file_block_special=bash_commons_test_if_file_block_special
+
+bash_commons_test_if_file_character_special(){
+	local file_path="${1}"
+
+	test -c "${file_path}"
+	return
+}
+alias bash_test_if_file_character_special=bash_commons_test_if_file_character_special
+alias bc_test_if_file_character_special=bash_commons_test_if_file_character_special
+alias bc_is_file_character_special=bash_commons_test_if_file_character_special
+
+
 
 ## Meta definitions and functions, just for Bash Commons itself ##
 BASH_COMMONS_EXECUTABLE_FILENAME="$(basename "${0}")"
