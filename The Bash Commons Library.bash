@@ -15,7 +15,7 @@ set -o pipefail
 # Support alias in script
 shopt -s expand_aliases
 
-## Meaninful Bash Conditional Expressions ##
+## Meaningful Bash Conditional Expressions ##
 ### File Existance ###
 bash_commons_test_if_file_exist(){
 	local file_path="${1}"
@@ -182,6 +182,196 @@ alias bash_test_if_file_sticky_bit_set=bash_commons_test_if_file_sticky_bit_set
 alias bc_test_if_file_sticky_bit_set=bash_commons_test_if_file_sticky_bit_set
 alias bc_is_file_sticky_bit_set=bash_commons_test_if_file_sticky_bit_set
 
+### File-related Time ###
+bash_commons_test_if_file_modified(){
+	local file_path="${1}"
+
+	test -N "${file_path}"
+	return
+}
+alias bash_test_if_file_modified=bash_commons_test_if_file_modified
+alias bc_test_if_file_modified=bash_commons_test_if_file_modified
+alias bc_is_file_modified=bash_commons_test_if_file_modified
+
+bash_commons_test_if_previous_file_is_newer_than_latter(){
+	local previous_file="${1}"; shift
+	local latter_file="${1}"
+
+	test -nt "${previous_file}" "${latter_file}"
+	return
+}
+alias bash_test_if_previous_file_is_newer_than_latter=bash_commons_test_if_previous_file_is_newer_than_latter
+alias bc_test_if_previous_file_is_newer_than_latter=bash_commons_test_if_previous_file_is_newer_than_latter
+alias bc_is_previous_file_is_newer_than_latter=bash_commons_test_if_previous_file_is_newer_than_latter
+
+bash_commons_test_if_previous_file_is_older_than_latter(){
+	local previous_file="${1}"; shift
+	local latter_file="${1}"
+
+	test -ot "${previous_file}" "${latter_file}"
+	return
+}
+alias bash_test_if_previous_file_is_older_than_latter=bash_commons_test_if_previous_file_is_older_than_latter
+alias bc_test_if_previous_file_is_older_than_latter=bash_commons_test_if_previous_file_is_older_than_latter
+alias bc_is_previous_file_is_older_than_latter=bash_commons_test_if_previous_file_is_older_than_latter
+
+### File Size Comparison ###
+bash_commons_test_if_file_not_empty(){
+	local file_path="${1}"
+
+	test -N "${file_path}"
+	return
+}
+alias bash_test_if_file_not_empty=bash_commons_test_if_file_not_empty
+alias bc_test_if_file_not_empty=bash_commons_test_if_file_not_empty
+alias bc_is_file_not_empty=bash_commons_test_if_file_not_empty
+
+bash_commons_test_if_file_empty(){
+	local file_path="${1}"
+
+	! test -N "${file_path}"
+	return
+}
+alias bash_test_if_file_empty=bash_commons_test_if_file_empty
+alias bc_test_if_file_empty=bash_commons_test_if_file_empty
+alias bc_is_file_empty=bash_commons_test_if_file_empty
+
+### String Comparison ###
+bash_commons_test_if_strings_are_equal(){
+	local string_a="${1}"; shift
+	local string_b="${1}"
+
+	test "${string_a}" = "${string_b}"
+	return
+}
+alias bash_test_if_strings_are_equal=bash_commons_test_if_strings_are_equal
+alias bc_test_if_strings_are_equal=bash_commons_test_if_strings_are_equal
+alias bc_is_strings_are_equal=bash_commons_test_if_strings_are_equal
+alias bc_is_strings_equal=bash_commons_test_if_strings_are_equal
+
+bash_commons_test_if_strings_are_not_equal(){
+	local string_a="${1}"; shift
+	local string_b="${1}"
+
+	test "${string_a}" != "${string_b}"
+	return
+}
+alias bash_test_if_strings_are_not_equal=bash_commons_test_if_strings_are_not_equal
+alias bc_test_if_strings_are_not_equal=bash_commons_test_if_strings_are_not_equal
+alias bc_is_strings_are_not_equal=bash_commons_test_if_strings_are_not_equal
+alias bc_is_strings_not_equal=bash_commons_test_if_strings_are_not_equal
+alias bc_is_strings_unequal=bash_commons_test_if_strings_are_not_equal
+
+bash_commons_test_if_strings_previous_lesser_than_latter(){
+	local string_a="${1}"; shift
+	local string_b="${1}"
+
+	test "${string_a}" \< "${string_b}"
+	return
+}
+alias bash_test_if_strings_previous_lesser_than_latter=bash_commons_test_if_strings_previous_lesser_than_latter
+alias bc_test_if_strings_previous_lesser_than_latter=bash_commons_test_if_strings_previous_lesser_than_latter
+alias bc_is_strings_previous_lesser_than_latter=bash_commons_test_if_strings_previous_lesser_than_latter
+
+bash_commons_test_if_strings_previous_greater_than_latter(){
+	local string_a="${1}"; shift
+	local string_b="${1}"
+
+	test "${string_a}" \> "${string_b}"
+	return
+}
+alias bash_test_if_strings_previous_greater_than_latter=bash_commons_test_if_strings_previous_greater_than_latter
+alias bc_test_if_strings_previous_greater_than_latter=bash_commons_test_if_strings_previous_greater_than_latter
+alias bc_is_strings_previous_greater_than_latter=bash_commons_test_if_strings_previous_greater_than_latter
+
+### Arithmetic Operations ###
+bash_commons_test_if_integers_are_equal(){
+	local -i integer_a="${1}"; shift
+	local -i integer_b="${2}"
+
+	test "${integer_a}" -eq "${integer_b}"
+}
+alias bash_test_if_integers_are_equal=bash_commons_test_if_integers_are_equal
+alias bc_test_if_integers_are_equal=bash_commons_test_if_integers_are_equal
+alias bc_is_integers_are_equal=bash_commons_test_if_integers_are_equal
+alias bc_is_integers_equal=bash_commons_test_if_integers_are_equal
+
+bash_commons_test_if_integers_are_not_equal(){
+	local -i integer_a="${1}"; shift
+	local -i integer_b="${2}"
+
+	test "${integer_a}" -ne "${integer_b}"
+}
+alias bash_test_if_integers_are_not_equal=bash_commons_test_if_integers_are_not_equal
+alias bc_test_if_integers_are_not_equal=bash_commons_test_if_integers_are_not_equal
+alias bc_is_integers_are_not_equal=bash_commons_test_if_integers_are_not_equal
+alias bc_is_integers_not_equal=bash_commons_test_if_integers_are_not_equal
+alias bc_is_integers_unequal=bash_commons_test_if_integers_are_not_equal
+
+bash_commons_test_if_integers_previous_lesser_than_latter(){
+	local -i integer_a="${1}"; shift
+	local -i integer_b="${2}"
+
+	test "${integer_a}" -lt "${integer_b}"
+}
+alias bash_test_if_integers_previous_lesser_than_latter=bash_commons_test_if_integers_previous_lesser_than_latter
+alias bc_test_if_integers_previous_lesser_than_latter=bash_commons_test_if_integers_previous_lesser_than_latter
+alias bc_is_integers_previous_lesser_than_latter=bash_commons_test_if_integers_previous_lesser_than_latter
+
+bash_commons_test_if_integers_previous_lesser_than_or_equal_to_latter(){
+	local -i integer_a="${1}"; shift
+	local -i integer_b="${2}"
+
+	test "${integer_a}" -le "${integer_b}"
+}
+alias bash_test_if_integers_previous_lesser_than_or_equal_to_latter=bash_commons_test_if_integers_previous_lesser_than_or_equal_to_latter
+alias bc_test_if_integers_previous_lesser_than_or_equal_to_latter=bash_commons_test_if_integers_previous_lesser_than_or_equal_to_latter
+alias bc_is_integers_previous_lesser_than_or_equal_to_latter=bash_commons_test_if_integers_previous_lesser_than_latter
+
+bash_commons_test_if_integers_previous_greater_then_latter(){
+	local -i integer_a="${1}"; shift
+	local -i integer_b="${2}"
+
+	test "${integer_a}" -gt "${integer_b}"
+}
+alias bash_test_if_integers_previous_greater_than_latter=bash_commons_test_if_integers_previous_greater_then_latter
+alias bc_test_if_integers_previous_greater_than_latter=bash_commons_test_if_integers_previous_greater_then_latter
+alias bc_is_integers_previous_greater_than_latter=bash_commons_test_if_integers_previous_greater_then_latter
+
+bash_commons_test_if_integers_previous_greater_than_or_equal_to_latter(){
+	local -i integer_a="${1}"; shift
+	local -i integer_b="${2}"
+
+	test "${integer_a}" -ge "${integer_b}"
+}
+alias bash_test_if_integers_previous_greater_than_or_equal_to_latter=bash_commons_test_if_integers_previous_greater_than_or_equal_to_latter
+alias bc_test_if_integers_previous_greater_than_or_equal_to_latter=bash_commons_test_if_integers_previous_greater_than_or_equal_to_latter
+alias bc_is_integers_previous_greater_than_or_equal_to_latter=bash_commons_test_if_integers_previous_lesser_than_latter
+
+### M. ###
+bash_commons_test_if_files_refer_same_device_and_inode_number(){
+	local file_a="${1}"; shift
+	local file_b="${1}"
+
+	test "${file_a}" -ef "${file_b}"
+	return
+}
+alias bash_test_if_files_refer_same_device_and_inode_number=bash_commons_test_if_files_refer_same_device_and_inode_number
+alias bc_test_if_files_refer_same_device_and_inode_number=bash_commons_test_if_files_refer_same_device_and_inode_number
+alias bc_is_files_refer_same_device_and_inode_number=bash_commons_test_if_files_refer_same_device_and_inode_number
+alias bc_is_files_same_inode=bash_commons_test_if_files_refer_same_device_and_inode_number
+
+bash_commons_test_if_file_descriptor_refer_to_open_terminal(){
+	local file_path="${1}"
+
+	test -t "${file_path}"
+	return
+}
+alias bash_test_if_file_descriptor_refer_to_open_terminal=bash_commons_test_if_file_descriptor_refer_to_open_terminal
+alias bc_test_if_file_descriptor_refer_to_open_terminal=bash_commons_test_if_file_descriptor_refer_to_open_terminal
+alias bc_is_file_descriptor_refer_to_open_terminal=bash_commons_test_if_file_descriptor_refer_to_open_terminal
+alias bc_is_fd_open_terminal=bash_commons_test_if_file_descriptor_refer_to_open_terminal
+
 ## Meta definitions and functions, just for Bash Commons itself ##
 BASH_COMMONS_EXECUTABLE_FILENAME="$(basename "${0}")"
 readonly BASH_COMMONS_EXECUTABLE_FILENAME
@@ -271,6 +461,48 @@ bash_commons_meta_demonstration(){
 		printf "%s: failed\n" "${path_test_case_title_holder}"
 	fi
 	unset test_result_holder
+
+	printf "\n"
+
+	path_test_case_title_holder="String Comparison"
+	local test_result_holder=1 # zero: passed; one: failed
+	printf "## %s() ##\n" "${path_test_case_title_holder}"
+	if bash_commons_test_if_strings_previous_lesser_than_latter "a" "b"; then
+		if ! bash_commons_test_if_strings_previous_lesser_than_latter "b" "a"; then
+			test_result_holder=0
+		else
+			test_result_holder=1
+		fi
+	else
+		test_result_holder=1
+	fi
+	if [ $test_result_holder ]; then
+		printf "%s: passed\n" "${path_test_case_title_holder}"
+	else
+		printf "%s: failed\n" "${path_test_case_title_holder}"
+	fi
+	unset test_result_holder # Let program fail when reference is not valid
+
+	printf "\n"
+
+	path_test_case_title_holder="Integer Comparison"
+	local test_result_holder=1 # zero: passed; one: failed
+	printf "## %s() ##\n" "${path_test_case_title_holder}"
+	if bash_commons_test_if_strings_previous_lesser_than_latter 1 2; then
+		if ! bash_commons_test_if_strings_previous_lesser_than_latter 2 1; then
+			test_result_holder=0
+		else
+			test_result_holder=1
+		fi
+	else
+		test_result_holder=1
+	fi
+	if [ $test_result_holder ]; then
+		printf "%s: passed\n" "${path_test_case_title_holder}"
+	else
+		printf "%s: failed\n" "${path_test_case_title_holder}"
+	fi
+	unset test_result_holder # Let program fail when reference is not valid
 
 	# Cleanup
 	rm -rf "${path_test_cases}"
