@@ -16,6 +16,7 @@ set -o pipefail
 shopt -s expand_aliases
 
 ## Meaninful Bash Conditional Expressions ##
+### File Existance ###
 bash_commons_test_if_file_exist(){
 	local file_path="${1}"
 
@@ -28,6 +29,37 @@ bash_commons_test_if_file_exist(){
 alias bash_test_if_file_exist=bash_commons_test_if_file_exist
 alias bc_test_if_file_exist=bash_commons_test_if_file_exist
 alias bc_is_file_exist=bash_commons_test_if_file_exist
+
+### File Type ###
+bash_commons_test_if_file_regular(){
+	local file_path="${1}"
+
+	test -f "${file_path}"
+	return
+}
+alias bash_test_if_file_regular=bash_commons_test_if_file_regular
+alias bc_test_if_file_regular=bash_commons_test_if_file_regular
+alias bc_is_file_regular=bash_commons_test_if_file_regular
+
+bash_commons_test_if_file_directory(){
+	local file_path="${1}"
+
+	test -d "${file_path}"
+	return
+}
+alias bash_test_if_file_directory=bash_commons_test_if_file_directory
+alias bc_test_if_file_directory=bash_commons_test_if_file_directory
+alias bc_is_file_directory=bash_commons_test_if_file_directory
+
+bash_commons_test_if_file_symbolic_link(){
+	local file_path="${1}"
+
+	test -h "${file_path}"
+	return
+}
+alias bash_test_if_file_symbolic_link=bash_commons_test_if_file_symbolic_link
+alias bc_test_if_file_symbolic_link=bash_commons_test_if_file_symbolic_link
+alias bc_is_file_symbolic_link=bash_commons_test_if_file_symbolic_link
 
 bash_commons_test_if_file_block_special(){
 	local file_path="${1}"
@@ -49,7 +81,106 @@ alias bash_test_if_file_character_special=bash_commons_test_if_file_character_sp
 alias bc_test_if_file_character_special=bash_commons_test_if_file_character_special
 alias bc_is_file_character_special=bash_commons_test_if_file_character_special
 
+bash_commons_test_if_file_named_pipe(){
+	local file_path="${1}"
 
+	test -p "${file_path}"
+	return
+}
+alias bash_test_if_file_named_pipe=bash_commons_test_if_file_named_pipe
+alias bc_test_if_file_named_pipe=bash_commons_test_if_file_named_pipe
+alias bc_is_file_named_pipe=bash_commons_test_if_file_named_pipe
+
+bash_commons_test_if_file_socket(){
+	local file_path="${1}"
+
+	test -S "${file_path}"
+	return
+}
+alias bash_test_if_file_socket=bash_commons_test_if_file_socket
+alias bc_test_if_file_socket=bash_commons_test_if_file_socket
+alias bc_is_file_socket=bash_commons_test_if_file_socket
+
+### File Ownership and Permissions ###
+bash_commons_test_if_file_owned_by_effective_user_id(){
+	local file_path="${1}"
+
+	test -O "${file_path}"
+	return
+}
+alias bash_test_if_file_owned_by_effective_user_id=bash_commons_test_if_file_owned_by_effective_user_id
+alias bc_test_if_file_owned_by_effective_user_id=bash_commons_test_if_file_owned_by_effective_user_id
+alias bc_is_file_owned_by_effective_user_id=bash_commons_test_if_file_owned_by_effective_user_id
+
+bash_commons_test_if_file_owned_by_effective_group_id(){
+	local file_path="${1}"
+
+	test -G "${file_path}"
+	return
+}
+alias bash_test_if_file_owned_by_effective_group_id=bash_commons_test_if_file_owned_by_effective_group_id
+alias bc_test_if_file_owned_by_effective_group_id=bash_commons_test_if_file_owned_by_effective_group_id
+alias bc_is_file_owned_by_effective_group_id=bash_commons_test_if_file_owned_by_effective_group_id
+
+bash_commons_test_if_file_readable(){
+	local file_path="${1}"
+
+	test -r "${file_path}"
+	return
+}
+alias bash_test_if_file_readable=bash_commons_test_if_file_readable
+alias bc_test_if_file_readable=bash_commons_test_if_file_readable
+alias bc_is_file_readable=bash_commons_test_if_file_readable
+
+bash_commons_test_if_file_writable(){
+	local file_path="${1}"
+
+	test -w "${file_path}"
+	return
+}
+alias bash_test_if_file_writable=bash_commons_test_if_file_writable
+alias bc_test_if_file_writable=bash_commons_test_if_file_writable
+alias bc_is_file_writable=bash_commons_test_if_file_writable
+
+bash_commons_test_if_file_executable(){
+	local file_path="${1}"
+
+	test -x "${file_path}"
+	return
+}
+alias bash_test_if_file_executable=bash_commons_test_if_file_executable
+alias bc_test_if_file_executable=bash_commons_test_if_file_executable
+alias bc_is_file_executable=bash_commons_test_if_file_executable
+
+bash_commons_test_if_file_suid_bit_set(){
+	local file_path="${1}"
+
+	test -u "${file_path}"
+	return
+}
+alias bash_test_if_file_suid_bit_set=bash_commons_test_if_file_suid_bit_set
+alias bc_test_if_file_suid_bit_set=bash_commons_test_if_file_suid_bit_set
+alias bc_is_file_suid_bit_set=bash_commons_test_if_file_suid_bit_set
+
+bash_commons_test_if_file_sgid_bit_set(){
+	local file_path="${1}"
+
+	test -g "${file_path}"
+	return
+}
+alias bash_test_if_file_sgid_bit_set=bash_commons_test_if_file_sgid_bit_set
+alias bc_test_if_file_sgid_bit_set=bash_commons_test_if_file_sgid_bit_set
+alias bc_is_file_sgid_bit_set=bash_commons_test_if_file_sgid_bit_set
+
+bash_commons_test_if_file_sticky_bit_set(){
+	local file_path="${1}"
+
+	test -k "${file_path}"
+	return
+}
+alias bash_test_if_file_sticky_bit_set=bash_commons_test_if_file_sticky_bit_set
+alias bc_test_if_file_sticky_bit_set=bash_commons_test_if_file_sticky_bit_set
+alias bc_is_file_sticky_bit_set=bash_commons_test_if_file_sticky_bit_set
 
 ## Meta definitions and functions, just for Bash Commons itself ##
 BASH_COMMONS_EXECUTABLE_FILENAME="$(basename "${0}")"
