@@ -19,7 +19,7 @@ shopt -s expand_aliases
 bash_commons_test_if_file_exist(){
 	local file_path="${1}"
 
-	test -a "$file_path"
+	test -a "${file_path}"
 # 	Causes a function or sourced script to exit with the return value
 #   specified by N.  If N is omitted, the return status is that of the
 #   last command executed within the function or script.
