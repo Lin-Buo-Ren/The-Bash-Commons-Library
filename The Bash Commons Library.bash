@@ -266,7 +266,7 @@ bash_commons_test_if_strings_previous_lesser_than_latter(){
 	local string_a="${1}"; shift
 	local string_b="${1}"
 
-	test "${string_a}" \< "${string_b}"
+	test "${string_a}" \< "${string_b}" # NOTE: Escaping is required to prevent being translated as the redirection operator
 	return
 }
 alias bash_test_if_strings_previous_lesser_than_latter=bash_commons_test_if_strings_previous_lesser_than_latter
@@ -274,10 +274,10 @@ alias bc_test_if_strings_previous_lesser_than_latter=bash_commons_test_if_string
 alias bc_is_strings_previous_lesser_than_latter=bash_commons_test_if_strings_previous_lesser_than_latter
 
 bash_commons_test_if_strings_previous_greater_than_latter(){
-	local string_a="${1}"; shift
-	local string_b="${1}"
+	local -r string_a="${1}"; shift
+	local -r string_b="${1}"
 
-	test "${string_a}" \> "${string_b}"
+	test "${string_a}" \> "${string_b}" # NOTE: Escaping is required to prevent being translated as the redirection operator
 	return
 }
 alias bash_test_if_strings_previous_greater_than_latter=bash_commons_test_if_strings_previous_greater_than_latter
@@ -286,8 +286,8 @@ alias bc_is_strings_previous_greater_than_latter=bash_commons_test_if_strings_pr
 
 ### Arithmetic Operations ###
 bash_commons_test_if_integers_are_equal(){
-	local -i integer_a="${1}"; shift
-	local -i integer_b="${2}"
+	local -ir integer_a="${1}"; shift
+	local -ir integer_b="${1}"
 
 	test "${integer_a}" -eq "${integer_b}"
 }
@@ -297,8 +297,8 @@ alias bc_is_integers_are_equal=bash_commons_test_if_integers_are_equal
 alias bc_is_integers_equal=bash_commons_test_if_integers_are_equal
 
 bash_commons_test_if_integers_are_not_equal(){
-	local -i integer_a="${1}"; shift
-	local -i integer_b="${2}"
+	local -ir integer_a="${1}"; shift
+	local -ir integer_b="${1}"
 
 	test "${integer_a}" -ne "${integer_b}"
 }
@@ -309,8 +309,8 @@ alias bc_is_integers_not_equal=bash_commons_test_if_integers_are_not_equal
 alias bc_is_integers_unequal=bash_commons_test_if_integers_are_not_equal
 
 bash_commons_test_if_integers_previous_lesser_than_latter(){
-	local -i integer_a="${1}"; shift
-	local -i integer_b="${2}"
+	local -ir integer_a="${1}"; shift
+	local -ir integer_b="${1}"
 
 	test "${integer_a}" -lt "${integer_b}"
 }
@@ -319,8 +319,8 @@ alias bc_test_if_integers_previous_lesser_than_latter=bash_commons_test_if_integ
 alias bc_is_integers_previous_lesser_than_latter=bash_commons_test_if_integers_previous_lesser_than_latter
 
 bash_commons_test_if_integers_previous_lesser_than_or_equal_to_latter(){
-	local -i integer_a="${1}"; shift
-	local -i integer_b="${2}"
+	local -ir integer_a="${1}"; shift
+	local -ir integer_b="${1}"
 
 	test "${integer_a}" -le "${integer_b}"
 }
@@ -329,8 +329,8 @@ alias bc_test_if_integers_previous_lesser_than_or_equal_to_latter=bash_commons_t
 alias bc_is_integers_previous_lesser_than_or_equal_to_latter=bash_commons_test_if_integers_previous_lesser_than_latter
 
 bash_commons_test_if_integers_previous_greater_then_latter(){
-	local -i integer_a="${1}"; shift
-	local -i integer_b="${2}"
+	local -ir integer_a="${1}"; shift
+	local -ir integer_b="${1}"
 
 	test "${integer_a}" -gt "${integer_b}"
 }
@@ -339,8 +339,8 @@ alias bc_test_if_integers_previous_greater_than_latter=bash_commons_test_if_inte
 alias bc_is_integers_previous_greater_than_latter=bash_commons_test_if_integers_previous_greater_then_latter
 
 bash_commons_test_if_integers_previous_greater_than_or_equal_to_latter(){
-	local -i integer_a="${1}"; shift
-	local -i integer_b="${2}"
+	local -ir integer_a="${1}"; shift
+	local -ir integer_b="${1}"
 
 	test "${integer_a}" -ge "${integer_b}"
 }
@@ -350,8 +350,8 @@ alias bc_is_integers_previous_greater_than_or_equal_to_latter=bash_commons_test_
 
 ### M. ###
 bash_commons_test_if_files_refer_same_device_and_inode_number(){
-	local file_a="${1}"; shift
-	local file_b="${1}"
+	local -ir file_a="${1}"; shift
+	local -ir file_b="${1}"
 
 	test "${file_a}" -ef "${file_b}"
 	return
@@ -381,7 +381,7 @@ readonly BASH_COMMONS_EXECUTABLE_DIRECTORY
 
 declare -r BASH_COMMONS_EXECUTABLE_PATH="${BASH_COMMONS_EXECUTABLE_DIRECTORY}/${BASH_COMMONS_EXECUTABLE_FILENAME}"
 
-declare -ri BASH_COMMONS_COMMANDLINE_ARGUMENT_NUMBER_ORIGINAL="${#}"
+declare -ir BASH_COMMONS_COMMANDLINE_ARGUMENT_NUMBER_ORIGINAL="${#}"
 
 declare -a BASH_COMMONS_COMMANDLINE_ARGUMENT_LIST_ORIGINAL
 if [ "$BASH_COMMONS_COMMANDLINE_ARGUMENT_NUMBER_ORIGINAL" -eq 0 ]; then
@@ -390,6 +390,10 @@ else
 	BASH_COMMONS_COMMANDLINE_ARGUMENT_LIST_ORIGINAL=("$@")
 fi
 readonly BASH_COMMONS_COMMANDLINE_ARGUMENT_LIST_ORIGINAL
+
+declare -r BASH_COMMONS_PATH_TESTCASES="Test Cases"
+declare -ir BASH_COMMONS_UNITTEST_SUCCESS=0
+declare -ir BASH_COMMONS_UNITTEST_FAILURE=1
 
 bash_commons_meta_print_help(){
 	local -r bash_commons_file_path="${1}"
@@ -402,110 +406,133 @@ bash_commons_meta_print_help(){
 	printf "for unittest.\n"
 	return
 }
+bash_commons_meta_unittest_meta_print_test_title(){
+	local -r test_title="${1}"
 
-bash_commons_meta_unittest(){
-	local -r path_test_cases="Test Cases"
-	local path_test_case_title_holder=""
+	printf "## %s() ##\n" "${test_title}"
+	return
+}
 
-	printf "# The Bash Commons Library UnitTest #\n"
+bash_commons_meta_unittest_meta_end_test(){
+	local -ir test_result=${1}
 
-	mkdir --parents "${path_test_cases}"
+	if [ "${test_result}" -eq ${BASH_COMMONS_UNITTEST_SUCCESS} ]; then
+		printf "Passed\n"
+	else
+		printf "FAILED\n"
+	fi
 
-	local -r testcase_path_regular_file="${path_test_cases}/Regular File"
-	touch "${testcase_path_regular_file}"
+	printf "\n" # Trail blank line
 
-	path_test_case_title_holder="bash_commons_test_if_file_exist"
-	local test_result_holder=1 # zero: passed; one: failed
-	printf "## %s() ##\n" "${path_test_case_title_holder}"
-	if bash_commons_test_if_file_exist "${testcase_path_regular_file}"; then
-		if ! bash_commons_test_if_file_exist "${testcase_path_regular_file}x"; then
-			test_result_holder=0
+	return
+}
+
+bash_commons_meta_unittest_test_file_exist(){
+	local -r path_file="${BASH_COMMONS_PATH_TESTCASES}/File"
+	local -i test_result_holder=${BASH_COMMONS_UNITTEST_FAILURE}
+
+	touch "${path_file}"
+
+	bash_commons_meta_unittest_meta_print_test_title "Bash Features - Bash Conditional Expressions - True if FILE exists"
+
+	if bash_commons_test_if_file_exist "${path_file}"; then
+		if ! bash_commons_test_if_file_exist "${path_file}x"; then
+			test_result_holder=${BASH_COMMONS_UNITTEST_SUCCESS}
 		else
-			test_result_holder=1
+			test_result_holder=${BASH_COMMONS_UNITTEST_FAILURE}
 		fi
 	else
-		test_result_holder=1
+		test_result_holder=${BASH_COMMONS_UNITTEST_FAILURE}
 	fi
-	if [ $test_result_holder ]; then
-		printf "%s: passed\n" "${path_test_case_title_holder}"
-	else
-		printf "%s: failed\n" "${path_test_case_title_holder}"
-	fi
-	unset test_result_holder # Let program fail when reference is not valid
 
-	printf "\n"
+	rm "${path_file}"
 
-	path_test_case_title_holder="Test alias functions"
-	local test_result_holder=1 # zero: passed; one: failed
-	printf "## %s ##\n" "${path_test_case_title_holder}"
-	if bash_test_if_file_exist "${testcase_path_regular_file}"; then
-		if bc_test_if_file_exist "${testcase_path_regular_file}"; then
-			if bc_is_file_exist "${testcase_path_regular_file}"; then
-				if ! bc_is_file_exist "${testcase_path_regular_file}x"; then
-					test_result_holder=0
+	bash_commons_meta_unittest_meta_end_test ${test_result_holder}
+	return
+}
+
+bash_commons_meta_unittest_alias_functions(){
+	local -r path_file="${BASH_COMMONS_PATH_TESTCASES}/File"
+	local -i test_result_holder=${BASH_COMMONS_UNITTEST_FAILURE}
+
+	touch "${path_file}"
+
+	bash_commons_meta_unittest_meta_print_test_title "Bash Commons Itself - Alias Functions"
+
+	if bash_test_if_file_exist "${path_file}"; then
+		if bc_test_if_file_exist "${path_file}"; then
+			if bc_is_file_exist "${path_file}"; then
+				if ! bc_is_file_exist "${path_file}x"; then
+					test_result_holder=${BASH_COMMONS_UNITTEST_SUCCESS}
 				else
-					test_result_holder=1
+					test_result_holder=${BASH_COMMONS_UNITTEST_FAILURE}
 				fi
 			else
-				test_result_holder=1
+				test_result_holder=${BASH_COMMONS_UNITTEST_FAILURE}
 			fi
 		else
-			test_result_holder=1
+			test_result_holder=${BASH_COMMONS_UNITTEST_FAILURE}
 		fi
 	else
-		test_result_holder=1
+		test_result_holder=${BASH_COMMONS_UNITTEST_FAILURE}
 	fi
-	if [ $test_result_holder ]; then
-		printf "%s: passed\n" "${path_test_case_title_holder}"
-	else
-		printf "%s: failed\n" "${path_test_case_title_holder}"
-	fi
-	unset test_result_holder
 
-	printf "\n"
+	rm "${path_file}"
 
-	path_test_case_title_holder="String Comparison"
-	local test_result_holder=1 # zero: passed; one: failed
-	printf "## %s() ##\n" "${path_test_case_title_holder}"
+	bash_commons_meta_unittest_meta_end_test ${test_result_holder}
+	return
+}
+
+bash_commons_meta_unittest_test_string_comparison(){
+	local -i test_result_holder=${BASH_COMMONS_UNITTEST_FAILURE}
+
+	bash_commons_meta_unittest_meta_print_test_title "Bash Features - Bash Conditional Expressions - String Comparison"
+
 	if bash_commons_test_if_strings_previous_lesser_than_latter "a" "b"; then
 		if ! bash_commons_test_if_strings_previous_lesser_than_latter "b" "a"; then
-			test_result_holder=0
+			test_result_holder=${BASH_COMMONS_UNITTEST_SUCCESS}
 		else
-			test_result_holder=1
+			test_result_holder=${BASH_COMMONS_UNITTEST_FAILURE}
 		fi
 	else
-		test_result_holder=1
+		test_result_holder=${BASH_COMMONS_UNITTEST_FAILURE}
 	fi
-	if [ $test_result_holder ]; then
-		printf "%s: passed\n" "${path_test_case_title_holder}"
-	else
-		printf "%s: failed\n" "${path_test_case_title_holder}"
-	fi
-	unset test_result_holder # Let program fail when reference is not valid
 
-	printf "\n"
+	bash_commons_meta_unittest_meta_end_test ${test_result_holder}
+	return
+}
 
-	path_test_case_title_holder="Integer Comparison"
-	local test_result_holder=1 # zero: passed; one: failed
-	printf "## %s() ##\n" "${path_test_case_title_holder}"
-	if bash_commons_test_if_strings_previous_lesser_than_latter 1 2; then
-		if ! bash_commons_test_if_strings_previous_lesser_than_latter 2 1; then
-			test_result_holder=0
+bash_commons_meta_unittest_test_integer_comparison(){
+	local -i test_result_holder=${BASH_COMMONS_UNITTEST_FAILURE}
+
+	bash_commons_meta_unittest_meta_print_test_title "Bash Features - Bash Conditional Expressions - Integer Comparison"
+
+	if bash_commons_test_if_integers_previous_lesser_than_or_equal_to_latter 1 2; then
+		if ! bash_commons_test_if_integers_previous_lesser_than_or_equal_to_latter 2 1; then
+			test_result_holder=${BASH_COMMONS_UNITTEST_SUCCESS}
 		else
-			test_result_holder=1
+			test_result_holder=${BASH_COMMONS_UNITTEST_FAILURE}
 		fi
 	else
-		test_result_holder=1
+		test_result_holder=${BASH_COMMONS_UNITTEST_FAILURE}
 	fi
-	if [ $test_result_holder ]; then
-		printf "%s: passed\n" "${path_test_case_title_holder}"
-	else
-		printf "%s: failed\n" "${path_test_case_title_holder}"
-	fi
-	unset test_result_holder # Let program fail when reference is not valid
+
+	bash_commons_meta_unittest_meta_end_test ${test_result_holder}
+	return
+}
+
+bash_commons_meta_unittest(){
+	printf "# The Bash Commons Library UnitTest #\n"
+
+	mkdir --parents "${BASH_COMMONS_PATH_TESTCASES}"
+
+	bash_commons_meta_unittest_test_file_exist
+	bash_commons_meta_unittest_alias_functions
+	bash_commons_meta_unittest_test_string_comparison
+	bash_commons_meta_unittest_test_integer_comparison
 
 	# Cleanup
-	rm -rf "${path_test_cases}"
+	rm -rf "${BASH_COMMONS_PATH_TESTCASES}"
 	return
 }
 
