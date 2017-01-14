@@ -397,17 +397,17 @@ bash_commons_meta_print_help(){
 	printf "# The Bash Commons Library #\n"
 	printf "Source this file to use the library, or run\n"
 	printf "\n"
-	printf "\t%s --demonstration\n" "${bash_commons_file_path}"
+	printf "\t%s --unittest\n" "${bash_commons_file_path}"
 	printf "\n"
-	printf "for demonstration.\n"
+	printf "for unittest.\n"
 	return
 }
 
-bash_commons_meta_demonstration(){
+bash_commons_meta_unittest(){
 	local -r path_test_cases="Test Cases"
 	local path_test_case_title_holder=""
 
-	printf "# The Bash Commons Library Demonstration #\n"
+	printf "# The Bash Commons Library UnitTest #\n"
 
 	mkdir --parents "${path_test_cases}"
 
@@ -530,10 +530,10 @@ bash_commons_meta_main(){
 	fi
 
 	# Parse command line arguments
-	# FIXME: Implement this after array access is implemented, for now we simply assume that 1 argument means demonstration
+	# FIXME: Implement this after array access is implemented, for now we simply assume that 1 argument means unittest
 	if [ "${bash_commons_commandline_argument_quantity}" -eq 1 ]; then
-		printf "Warning: assuming --demonstration, run this program without command-line arguments to see usage.\n" 1>&2
-		bash_commons_meta_demonstration
+		printf "Warning: assuming --unittest, run this program without command-line arguments to see usage.\n" 1>&2
+		bash_commons_meta_unittest
 		exit 0
 	fi
 }
