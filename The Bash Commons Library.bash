@@ -419,7 +419,7 @@ bash_commons_meta_unittest_meta_end_test(){
 	if [ "${test_result}" -eq ${BASH_COMMONS_UNITTEST_SUCCESS} ]; then
 		printf "Passed\n"
 	else
-		printf "FAILED\n"
+		printf "**FAILED**\n"
 	fi
 
 	printf "\n" # Trail blank line
