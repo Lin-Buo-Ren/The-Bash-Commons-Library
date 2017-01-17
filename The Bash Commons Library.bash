@@ -372,6 +372,16 @@ alias bc_test_if_file_descriptor_refer_to_open_terminal=bash_commons_test_if_fil
 alias bc_is_file_descriptor_refer_to_open_terminal=bash_commons_test_if_file_descriptor_refer_to_open_terminal
 alias bc_is_fd_open_terminal=bash_commons_test_if_file_descriptor_refer_to_open_terminal
 
+## Bash Features - Arrays - Simple Indexed Array ##
+bash_commons_array_indexed_access_integer(){
+	local -ir index=${1}; shift
+	local -a array=("${@}")
+	readonly array
+
+	printf "%s" "${array[${index}]}"
+	return
+}
+
 ## Meta definitions and functions, just for Bash Commons itself ##
 BASH_COMMONS_EXECUTABLE_FILENAME="$(basename "${0}")"
 readonly BASH_COMMONS_EXECUTABLE_FILENAME
@@ -521,6 +531,20 @@ bash_commons_meta_unittest_test_integer_comparison(){
 	return
 }
 
+bash_commons_meta_unittest_array_indexed_access_integer(){
+	local -i test_result_holder=${BASH_COMMONS_UNITTEST_FAILURE}
+	local -ar array=(1 2 3)
+	bash_commons_meta_unittest_meta_print_test_title "Bash Features - Arrays - Access Integer"
+
+	if [ "$(bash_commons_array_indexed_access_integer 1 "${array[@]}")" = "2" ];then
+		test_result_holder=${BASH_COMMONS_UNITTEST_SUCCESS}
+	else
+		test_result_holder=${BASH_COMMONS_UNITTEST_FAILURE}
+	fi
+	bash_commons_meta_unittest_meta_end_test ${test_result_holder}
+	return
+}
+
 bash_commons_meta_unittest(){
 	printf "# The Bash Commons Library UnitTest #\n"
 
@@ -530,6 +554,7 @@ bash_commons_meta_unittest(){
 	bash_commons_meta_unittest_alias_functions
 	bash_commons_meta_unittest_test_string_comparison
 	bash_commons_meta_unittest_test_integer_comparison
+	bash_commons_meta_unittest_array_indexed_access_integer
 
 	# Cleanup
 	rm -rf "${BASH_COMMONS_PATH_TESTCASES}"
