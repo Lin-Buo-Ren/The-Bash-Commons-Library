@@ -380,7 +380,7 @@ bash_commons_array_indexed_access_integer(){
 	readonly array
 
 	printf "%s" "${array[${index}]}"
-	return
+	return ${BASH_COMMONS_UNITTEST_SUCCESS}
 }
 
 ## Meta definitions and functions, just for Bash Commons itself ##
