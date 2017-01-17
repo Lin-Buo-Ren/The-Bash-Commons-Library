@@ -13,7 +13,7 @@ set -o errtrace
 # If set, the return value of a pipeline is the value of the last (rightmost) command to exit with a non-zero status, or zero if all commands in the pipeline exit successfully.
 set -o pipefail
 
-# Support alias in script
+# Enable alias to support function aliases
 shopt -s expand_aliases
 
 ## Meaningful Bash Conditional Expressions ##
