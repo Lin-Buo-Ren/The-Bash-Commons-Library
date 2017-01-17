@@ -406,6 +406,38 @@ declare -r BASH_COMMONS_PATH_TESTCASES="Test Cases"
 declare -ir BASH_COMMONS_UNITTEST_SUCCESS=0
 declare -ir BASH_COMMONS_UNITTEST_FAILURE=1
 
+bash_commons_meta_warn_before_errexit_abort(){
+	local -ir line_error_location=${1}; shift
+	local -ir command_return_status=${1}
+
+	printf "ERROR: This program has encountered an error and is ending prematurely, contact developer for support.\n" 1>&2
+
+	printf "\n" # Separate paragraphs
+
+	printf "INFO: Technical information: \"The Bash Commons Library\" by default sets Bash's \`errexit\` option, which will prematurely end the program if any command returns error status without being intercepted by the program.  You might need to recheck all the commands that will cause this behavior and if, the situation is intended and unavoidable, unset(\`set +o errexit\`) and reset(\`set -o errexit\`) errexit to escape the causing code section, for more information please refer Bash Manual - Shell Builtin Commands - Modifying Shell Behavior - The Set Builtin - \`-e\`.\n" 1>&2
+
+	printf "\n" # Separate paragraphs
+
+	printf "INFO: Technical information: You might want to customize this message using \`trap\` command, refer Bash Manual - Shell Builtin Commands - Bourne Shell Builtins - \`trap\`\n" 1>&2
+
+	printf "\n" # Separate paragraphs
+
+	printf "INFO: Technical information: The error happens at line %s, command return status is %s.\n" "${line_error_location}" "${command_return_status}"
+	return
+}
+trap 'bash_commons_meta_warn_before_errexit_abort ${LINENO} ${?}' ERR
+
+bash_commons_meta_info_before_normal_exit(){
+	printf -- "------------------------------------\n"
+	printf "The Bash Commons Library\n"
+	printf "林博仁 et. al. © 2017\n"
+	printf "Official Website: https://github.com/Lin-Buo-Ren/The-Bash-Commons-Library\n"
+	printf "Intellectual Property License: WTFPL\n"
+
+	return
+}
+trap 'bash_commons_meta_info_before_normal_exit' EXIT
+
 bash_commons_meta_print_help(){
 	local -r bash_commons_file_path="${1}"
 
