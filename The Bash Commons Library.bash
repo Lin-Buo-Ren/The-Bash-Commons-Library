@@ -417,6 +417,7 @@ bash_commons_meta_print_help(){
 	printf "for unittest.\n"
 	return
 }
+
 bash_commons_meta_unittest_meta_print_test_title(){
 	local -r test_title="${1}"
 
