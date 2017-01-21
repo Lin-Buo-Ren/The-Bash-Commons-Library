@@ -472,12 +472,12 @@ bash_commons_meta_unittest_meta_end_test(){
 }
 
 bash_commons_meta_unittest_test_file_exist(){
+	bash_commons_meta_unittest_meta_print_test_title "Bash Features - Bash Conditional Expressions - True if FILE exists"
+
 	local -r path_file="${BASH_COMMONS_PATH_TESTCASES}/File"
 	local -i test_result_holder=${BASH_COMMONS_UNITTEST_FAILURE}
 
 	touch "${path_file}"
-
-	bash_commons_meta_unittest_meta_print_test_title "Bash Features - Bash Conditional Expressions - True if FILE exists"
 
 	if bash_commons_test_if_file_exist "${path_file}"; then
 		if ! bash_commons_test_if_file_exist "${path_file}x"; then
@@ -496,12 +496,12 @@ bash_commons_meta_unittest_test_file_exist(){
 }
 
 bash_commons_meta_unittest_alias_functions(){
+	bash_commons_meta_unittest_meta_print_test_title "Bash Commons Itself - Alias Functions"
+
 	local -r path_file="${BASH_COMMONS_PATH_TESTCASES}/File"
 	local -i test_result_holder=${BASH_COMMONS_UNITTEST_FAILURE}
 
 	touch "${path_file}"
-
-	bash_commons_meta_unittest_meta_print_test_title "Bash Commons Itself - Alias Functions"
 
 	if bash_test_if_file_exist "${path_file}"; then
 		if bc_test_if_file_exist "${path_file}"; then
@@ -528,9 +528,9 @@ bash_commons_meta_unittest_alias_functions(){
 }
 
 bash_commons_meta_unittest_test_string_comparison(){
-	local -i test_result_holder=${BASH_COMMONS_UNITTEST_FAILURE}
-
 	bash_commons_meta_unittest_meta_print_test_title "Bash Features - Bash Conditional Expressions - String Comparison"
+
+	local -i test_result_holder=${BASH_COMMONS_UNITTEST_FAILURE}
 
 	if bash_commons_test_if_strings_previous_lesser_than_latter "a" "b"; then
 		if ! bash_commons_test_if_strings_previous_lesser_than_latter "b" "a"; then
@@ -547,9 +547,9 @@ bash_commons_meta_unittest_test_string_comparison(){
 }
 
 bash_commons_meta_unittest_test_integer_comparison(){
-	local -i test_result_holder=${BASH_COMMONS_UNITTEST_FAILURE}
-
 	bash_commons_meta_unittest_meta_print_test_title "Bash Features - Bash Conditional Expressions - Integer Comparison"
+
+	local -i test_result_holder=${BASH_COMMONS_UNITTEST_FAILURE}
 
 	if bash_commons_test_if_integers_previous_lesser_than_or_equal_to_latter 1 2; then
 		if ! bash_commons_test_if_integers_previous_lesser_than_or_equal_to_latter 2 1; then
@@ -566,9 +566,10 @@ bash_commons_meta_unittest_test_integer_comparison(){
 }
 
 bash_commons_meta_unittest_array_indexed_access_element(){
+	bash_commons_meta_unittest_meta_print_test_title "Bash Features - Arrays - Access Element"
+
 	local -i test_result_holder=${BASH_COMMONS_UNITTEST_FAILURE}
 	local -ar array=(1 2 3)
-	bash_commons_meta_unittest_meta_print_test_title "Bash Features - Arrays - Access Element"
 
 	if [ "$(bash_commons_array_indexed_access_element 1 "${array[@]}")" = "2" ];then
 		test_result_holder=${BASH_COMMONS_UNITTEST_SUCCESS}
