@@ -374,27 +374,27 @@ alias bc_is_file_descriptor_refer_to_open_terminal=bash_commons_test_if_file_des
 alias bc_is_fd_open_terminal=bash_commons_test_if_file_descriptor_refer_to_open_terminal
 
 ## Bash Features - Arrays - Simple Indexed Array ##
-bash_commons_array_indexed_get_length(){
-	local -a array=("${@}")
-	readonly array
-
-	# null array is considered as "unbound variable", disable nounset check temporarily
-	set +o nounset
-	if [ -z "${array[*]}" ]; then
-		printf "0"
-	else
-		printf "%s" ${#array[@]}
-	fi
-	set -o nounset
-	return ${BASH_COMMONS_UNITTEST_SUCCESS}
-}
-
 bash_commons_array_indexed_access_element(){
 	local -ir index=${1}; shift
 	local -a array=("${@}")
 	readonly array
 
 	printf "%s" "${array[${index}]}"
+	return ${BASH_COMMONS_UNITTEST_SUCCESS}
+}
+
+bash_commons_array_indexed_get_length(){
+	local -n array=${1}
+	readonly array
+
+	# null array is considered as "unbound variable", disable nounset check temporarily
+	set +o nounset
+	if [ -z "${array}" ]; then
+		printf "0"
+	else
+		printf "%s" ${#array[@]}
+	fi
+	set -o nounset
 	return ${BASH_COMMONS_UNITTEST_SUCCESS}
 }
 
@@ -602,13 +602,12 @@ bash_commons_meta_unittest_array_indexed_length(){
 	local -ar array_1=(1 2 3 4 5)
 	local -ar array_null=()
 
-	if [ "$(bash_commons_array_indexed_get_length ${array_1[@]})" == 5 ]; then
-		# It is known that null array will fail (unbounded variable)
-# 		if [ "$(bash_commons_array_indexed_get_length "${array_null}")" == 0 ]; then
-# 			test_result_holder=${BASH_COMMONS_UNITTEST_SUCCESS}
-# 		else
-# 			test_result_holder=${BASH_COMMONS_UNITTEST_FAILURE}
-# 		fi
+	if [ "$(bash_commons_array_indexed_get_length array_1)" == 5 ]; then
+		if [ "$(bash_commons_array_indexed_get_length array_null)" == 0 ]; then
+			test_result_holder=${BASH_COMMONS_UNITTEST_SUCCESS}
+		else
+			test_result_holder=${BASH_COMMONS_UNITTEST_FAILURE}
+		fi
 		test_result_holder=${BASH_COMMONS_UNITTEST_SUCCESS}
 	else
 		test_result_holder=${BASH_COMMONS_UNITTEST_FAILURE}
