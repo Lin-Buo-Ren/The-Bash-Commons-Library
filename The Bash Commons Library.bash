@@ -384,18 +384,30 @@ bash_commons_array_indexed_access_element(){
 }
 
 bash_commons_array_indexed_get_length(){
-	local -n array=${1}
-	readonly array
+	local -nr array_reference=${1}
 
 	# null array is considered as "unbound variable", disable nounset check temporarily
 	set +o nounset
-	if [ -z "${array}" ]; then
+	if [ -z "${array_reference}" ]; then
 		printf "0"
 	else
-		printf "%s" ${#array[@]}
+		printf "%s" ${#array_reference[@]}
 	fi
 	set -o nounset
 	return ${BASH_COMMONS_UNITTEST_SUCCESS}
+}
+
+bash_commons_array_indexed_element_pop(){
+	local -n array_reference=${1}
+
+	if [ -z "${array_reference}" ]; then
+		printf "The Bash Commons Library - bash_commons_array_indexed_element_pop - Error: array is null.\n" 1>&2
+		return ${BASH_COMMONS_UNITTEST_FAILURE}
+	else
+		printf "${array_reference[0]}"
+		array_reference=("${array_reference[@]:1}")
+		return ${BASH_COMMONS_UNITTEST_SUCCESS}
+	fi
 }
 
 ## Meta definitions and functions, just for Bash Commons itself ##
@@ -616,6 +628,22 @@ bash_commons_meta_unittest_array_indexed_length(){
 	return
 }
 
+bash_commons_meta_unittest_array_indexed_element_pop(){
+	bash_commons_meta_unittest_meta_print_test_title "Bash Features - Arrays - Pop an element"
+
+	local -i test_result_holder=${BASH_COMMONS_UNITTEST_FAILURE}
+	local -i popped_element=0
+	local -a array_1=(1 2 3 4 5)
+	local -ar array_null=()
+
+	# FIXME: Aware, infinite loop!
+	while [ "$(bash_commons_array_indexed_get_length array_1)" -gt 0 ]; do
+		popped_element=$(bash_commons_array_indexed_element_pop array_1)
+		printf "%s " ${popped_element}
+		break
+	done
+}
+
 bash_commons_meta_unittest(){
 	printf "# The Bash Commons Library UnitTest #\n"
 
@@ -627,6 +655,7 @@ bash_commons_meta_unittest(){
 	bash_commons_meta_unittest_test_integer_comparison
 	bash_commons_meta_unittest_array_indexed_access_element
 	bash_commons_meta_unittest_array_indexed_length
+	bash_commons_meta_unittest_array_indexed_element_pop
 
 	# Cleanup
 	rm -rf "${BASH_COMMONS_PATH_TESTCASES}"
