@@ -380,7 +380,7 @@ bash_commons_array_indexed_access_element(){
 	readonly array
 
 	printf "%s" "${array[${index}]}"
-	return ${BASH_COMMONS_UNITTEST_SUCCESS}
+	return ${BASH_COMMONS_RESULT_SUCCESS}
 }
 
 bash_commons_array_indexed_get_length(){
@@ -394,7 +394,7 @@ bash_commons_array_indexed_get_length(){
 		printf "%s" ${#array_reference[@]}
 	fi
 	set -o nounset
-	return ${BASH_COMMONS_UNITTEST_SUCCESS}
+	return ${BASH_COMMONS_RESULT_SUCCESS}
 }
 
 bash_commons_array_indexed_element_pop(){
@@ -402,11 +402,11 @@ bash_commons_array_indexed_element_pop(){
 
 	if [ -z "${array_reference}" ]; then
 		printf "The Bash Commons Library - bash_commons_array_indexed_element_pop - Error: array is null.\n" 1>&2
-		return ${BASH_COMMONS_UNITTEST_FAILURE}
+		return ${BASH_COMMONS_RESULT_FAILURE}
 	else
 		printf "${array_reference[0]}"
 		array_reference=("${array_reference[@]:1}")
-		return ${BASH_COMMONS_UNITTEST_SUCCESS}
+		return ${BASH_COMMONS_RESULT_SUCCESS}
 	fi
 }
 
@@ -430,8 +430,8 @@ fi
 readonly BASH_COMMONS_COMMANDLINE_ARGUMENT_LIST_ORIGINAL
 
 declare -r BASH_COMMONS_PATH_TESTCASES="Test Cases"
-declare -ir BASH_COMMONS_UNITTEST_SUCCESS=0
-declare -ir BASH_COMMONS_UNITTEST_FAILURE=1
+declare -ir BASH_COMMONS_RESULT_SUCCESS=0
+declare -ir BASH_COMMONS_RESULT_FAILURE=1
 
 bash_commons_meta_warn_before_errexit_abort(){
 	local -ir line_error_location=${1}; shift
@@ -487,7 +487,7 @@ bash_commons_meta_unittest_meta_print_test_title(){
 bash_commons_meta_unittest_meta_end_test(){
 	local -ir test_result=${1}
 
-	if [ "${test_result}" -eq ${BASH_COMMONS_UNITTEST_SUCCESS} ]; then
+	if [ "${test_result}" -eq ${BASH_COMMONS_RESULT_SUCCESS} ]; then
 		printf "Passed\n"
 	else
 		printf "**FAILED**\n"
@@ -502,18 +502,18 @@ bash_commons_meta_unittest_test_file_exist(){
 	bash_commons_meta_unittest_meta_print_test_title "Bash Features - Bash Conditional Expressions - True if FILE exists"
 
 	local -r path_file="${BASH_COMMONS_PATH_TESTCASES}/File"
-	local -i test_result_holder=${BASH_COMMONS_UNITTEST_FAILURE}
+	local -i test_result_holder=${BASH_COMMONS_RESULT_FAILURE}
 
 	touch "${path_file}"
 
 	if bash_commons_test_if_file_exist "${path_file}"; then
 		if ! bash_commons_test_if_file_exist "${path_file}x"; then
-			test_result_holder=${BASH_COMMONS_UNITTEST_SUCCESS}
+			test_result_holder=${BASH_COMMONS_RESULT_SUCCESS}
 		else
-			test_result_holder=${BASH_COMMONS_UNITTEST_FAILURE}
+			test_result_holder=${BASH_COMMONS_RESULT_FAILURE}
 		fi
 	else
-		test_result_holder=${BASH_COMMONS_UNITTEST_FAILURE}
+		test_result_holder=${BASH_COMMONS_RESULT_FAILURE}
 	fi
 
 	rm "${path_file}"
@@ -526,7 +526,7 @@ bash_commons_meta_unittest_alias_functions(){
 	bash_commons_meta_unittest_meta_print_test_title "Bash Commons Itself - Alias Functions"
 
 	local -r path_file="${BASH_COMMONS_PATH_TESTCASES}/File"
-	local -i test_result_holder=${BASH_COMMONS_UNITTEST_FAILURE}
+	local -i test_result_holder=${BASH_COMMONS_RESULT_FAILURE}
 
 	touch "${path_file}"
 
@@ -534,18 +534,18 @@ bash_commons_meta_unittest_alias_functions(){
 		if bc_test_if_file_exist "${path_file}"; then
 			if bc_is_file_exist "${path_file}"; then
 				if ! bc_is_file_exist "${path_file}x"; then
-					test_result_holder=${BASH_COMMONS_UNITTEST_SUCCESS}
+					test_result_holder=${BASH_COMMONS_RESULT_SUCCESS}
 				else
-					test_result_holder=${BASH_COMMONS_UNITTEST_FAILURE}
+					test_result_holder=${BASH_COMMONS_RESULT_FAILURE}
 				fi
 			else
-				test_result_holder=${BASH_COMMONS_UNITTEST_FAILURE}
+				test_result_holder=${BASH_COMMONS_RESULT_FAILURE}
 			fi
 		else
-			test_result_holder=${BASH_COMMONS_UNITTEST_FAILURE}
+			test_result_holder=${BASH_COMMONS_RESULT_FAILURE}
 		fi
 	else
-		test_result_holder=${BASH_COMMONS_UNITTEST_FAILURE}
+		test_result_holder=${BASH_COMMONS_RESULT_FAILURE}
 	fi
 
 	rm "${path_file}"
@@ -557,16 +557,16 @@ bash_commons_meta_unittest_alias_functions(){
 bash_commons_meta_unittest_test_string_comparison(){
 	bash_commons_meta_unittest_meta_print_test_title "Bash Features - Bash Conditional Expressions - String Comparison"
 
-	local -i test_result_holder=${BASH_COMMONS_UNITTEST_FAILURE}
+	local -i test_result_holder=${BASH_COMMONS_RESULT_FAILURE}
 
 	if bash_commons_test_if_strings_previous_lesser_than_latter "a" "b"; then
 		if ! bash_commons_test_if_strings_previous_lesser_than_latter "b" "a"; then
-			test_result_holder=${BASH_COMMONS_UNITTEST_SUCCESS}
+			test_result_holder=${BASH_COMMONS_RESULT_SUCCESS}
 		else
-			test_result_holder=${BASH_COMMONS_UNITTEST_FAILURE}
+			test_result_holder=${BASH_COMMONS_RESULT_FAILURE}
 		fi
 	else
-		test_result_holder=${BASH_COMMONS_UNITTEST_FAILURE}
+		test_result_holder=${BASH_COMMONS_RESULT_FAILURE}
 	fi
 
 	bash_commons_meta_unittest_meta_end_test ${test_result_holder}
@@ -576,16 +576,16 @@ bash_commons_meta_unittest_test_string_comparison(){
 bash_commons_meta_unittest_test_integer_comparison(){
 	bash_commons_meta_unittest_meta_print_test_title "Bash Features - Bash Conditional Expressions - Integer Comparison"
 
-	local -i test_result_holder=${BASH_COMMONS_UNITTEST_FAILURE}
+	local -i test_result_holder=${BASH_COMMONS_RESULT_FAILURE}
 
 	if bash_commons_test_if_integers_previous_lesser_than_or_equal_to_latter 1 2; then
 		if ! bash_commons_test_if_integers_previous_lesser_than_or_equal_to_latter 2 1; then
-			test_result_holder=${BASH_COMMONS_UNITTEST_SUCCESS}
+			test_result_holder=${BASH_COMMONS_RESULT_SUCCESS}
 		else
-			test_result_holder=${BASH_COMMONS_UNITTEST_FAILURE}
+			test_result_holder=${BASH_COMMONS_RESULT_FAILURE}
 		fi
 	else
-		test_result_holder=${BASH_COMMONS_UNITTEST_FAILURE}
+		test_result_holder=${BASH_COMMONS_RESULT_FAILURE}
 	fi
 
 	bash_commons_meta_unittest_meta_end_test ${test_result_holder}
@@ -595,13 +595,13 @@ bash_commons_meta_unittest_test_integer_comparison(){
 bash_commons_meta_unittest_array_indexed_access_element(){
 	bash_commons_meta_unittest_meta_print_test_title "Bash Features - Arrays - Access Element"
 
-	local -i test_result_holder=${BASH_COMMONS_UNITTEST_FAILURE}
+	local -i test_result_holder=${BASH_COMMONS_RESULT_FAILURE}
 	local -ar array=(1 2 3)
 
 	if [ "$(bash_commons_array_indexed_access_element 1 "${array[@]}")" = "2" ];then
-		test_result_holder=${BASH_COMMONS_UNITTEST_SUCCESS}
+		test_result_holder=${BASH_COMMONS_RESULT_SUCCESS}
 	else
-		test_result_holder=${BASH_COMMONS_UNITTEST_FAILURE}
+		test_result_holder=${BASH_COMMONS_RESULT_FAILURE}
 	fi
 	bash_commons_meta_unittest_meta_end_test ${test_result_holder}
 	return
@@ -610,19 +610,19 @@ bash_commons_meta_unittest_array_indexed_access_element(){
 bash_commons_meta_unittest_array_indexed_length(){
 	bash_commons_meta_unittest_meta_print_test_title "Bash Features - Arrays - Length of an Array"
 
-	local -i test_result_holder=${BASH_COMMONS_UNITTEST_FAILURE}
+	local -i test_result_holder=${BASH_COMMONS_RESULT_FAILURE}
 	local -ar array_1=(1 2 3 4 5)
 	local -ar array_null=()
 
 	if [ "$(bash_commons_array_indexed_get_length array_1)" == 5 ]; then
 		if [ "$(bash_commons_array_indexed_get_length array_null)" == 0 ]; then
-			test_result_holder=${BASH_COMMONS_UNITTEST_SUCCESS}
+			test_result_holder=${BASH_COMMONS_RESULT_SUCCESS}
 		else
-			test_result_holder=${BASH_COMMONS_UNITTEST_FAILURE}
+			test_result_holder=${BASH_COMMONS_RESULT_FAILURE}
 		fi
-		test_result_holder=${BASH_COMMONS_UNITTEST_SUCCESS}
+		test_result_holder=${BASH_COMMONS_RESULT_SUCCESS}
 	else
-		test_result_holder=${BASH_COMMONS_UNITTEST_FAILURE}
+		test_result_holder=${BASH_COMMONS_RESULT_FAILURE}
 	fi
 	bash_commons_meta_unittest_meta_end_test ${test_result_holder}
 	return
@@ -631,7 +631,7 @@ bash_commons_meta_unittest_array_indexed_length(){
 bash_commons_meta_unittest_array_indexed_element_pop(){
 	bash_commons_meta_unittest_meta_print_test_title "Bash Features - Arrays - Pop an element"
 
-	local -i test_result_holder=${BASH_COMMONS_UNITTEST_FAILURE}
+	local -i test_result_holder=${BASH_COMMONS_RESULT_FAILURE}
 	local -i popped_element=0
 	local -a array_1=(1 2 3 4 5)
 	local -ar array_null=()
