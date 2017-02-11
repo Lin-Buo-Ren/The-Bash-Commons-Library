@@ -635,14 +635,13 @@ bash_commons_meta_unittest_array_indexed_element_pop(){
 
 	local -i test_result_holder=${BASH_COMMONS_RESULT_FAILURE}
 	local -i popped_element=0
-	local -a array_1=(1 2 3 4 5)
+	local -a array_1=(5 4 3 2 1)
 	local -ar array_null=()
 
-	# FIXME: Aware, infinite loop!
-	while [ "$(bash_commons_array_indexed_get_length array_1)" -gt 0 ]; do
+	# BUG: Aware, infinite loop!
+	until [ "$(bash_commons_array_indexed_get_length array_1)" -eq 0 ]; do
 		popped_element=$(bash_commons_array_indexed_element_pop array_1)
 		printf "%s " ${popped_element}
-		break
 	done
 }
 
