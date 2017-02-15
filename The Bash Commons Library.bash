@@ -406,7 +406,12 @@ bash_commons_array_indexed_element_pop(){
 		return ${BASH_COMMONS_RESULT_FAILURE}
 	else
 		printf "${array_reference[0]}"
-		array_reference=("${array_reference[@]:1}")
+
+		unset array_reference[0]
+
+		# repack array
+		array_reference=("${array_reference[@]}")
+
 		return ${BASH_COMMONS_RESULT_SUCCESS}
 	fi
 }
