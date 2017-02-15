@@ -665,8 +665,8 @@ bash_commons_meta_unittest_array_indexed_element_pop(){
 
 	# BUG: Aware, infinite loop!
 	until [ "$(bash_commons_array_indexed_get_length array_1)" -eq 0 ]; do
-		popped_element=$(bash_commons_array_indexed_element_pop array_1)
-		printf "%s " ${popped_element}
+		popped_element="$(bash_commons_array_indexed_element_pop array_1)"
+		printf "%s " "${popped_element}"
 	done
 }
 
