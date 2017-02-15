@@ -19,6 +19,10 @@ set -o pipefail
 ## Enable alias to support function aliases
 shopt -s expand_aliases
 
+## Define code for execution result
+declare -ir BASH_COMMONS_RESULT_SUCCESS=0
+declare -ir BASH_COMMONS_RESULT_FAILURE=1
+
 ## Meaningful Bash Conditional Expressions ##
 ### File Existance ###
 bash_commons_test_if_file_exist(){
@@ -414,48 +418,75 @@ bash_commons_array_indexed_element_pop(){
 }
 
 ## Meta definitions and functions, just for Bash Commons itself ##
-BASH_COMMONS_EXECUTABLE_FILENAME="$(basename "${0}")"
+BASH_COMMONS_EXECUTABLE_FILENAME="$(basename "${BASH_SOURCE[0]}")"
 readonly BASH_COMMONS_EXECUTABLE_FILENAME
 
-BASH_COMMONS_EXECUTABLE_DIRECTORY="$(realpath --relative-to="$(pwd)" --no-symlinks "$(dirname "${0}")")"
+BASH_COMMONS_EXECUTABLE_DIRECTORY="$(realpath --strip "$(dirname "${BASH_SOURCE[0]}")")"
 readonly BASH_COMMONS_EXECUTABLE_DIRECTORY
 
-declare -r BASH_COMMONS_EXECUTABLE_PATH="${BASH_COMMONS_EXECUTABLE_DIRECTORY}/${BASH_COMMONS_EXECUTABLE_FILENAME}"
+declare -r BASH_COMMONS_EXECUTABLE_PATH="$(realpath --strip "${BASH_SOURCE[0]}")"
 
-declare -ir BASH_COMMONS_COMMANDLINE_ARGUMENT_NUMBER_ORIGINAL="${#}"
+# Relative path (to the working directory) of the script
+BASH_COMMONS_EXECUTABLE_PATH_RELATIVE="$(realpath --relative-to="${PWD}" --strip "${BASH_COMMONS_EXECUTABLE_PATH}")"
+readonly BASH_COMMONS_EXECUTABLE_PATH_RELATIVE
 
-declare -a BASH_COMMONS_COMMANDLINE_ARGUMENT_LIST_ORIGINAL
-if [ "$BASH_COMMONS_COMMANDLINE_ARGUMENT_NUMBER_ORIGINAL" -eq 0 ]; then
-	BASH_COMMONS_COMMANDLINE_ARGUMENT_LIST_ORIGINAL=(nothing)
+declare -ir BASH_COMMONS_COMMANDLINE_ARGUMENT_QUANTITY="${#}"
+
+declare -a BASH_COMMONS_COMMANDLINE_ARGUMENTS
+if [ "$BASH_COMMONS_COMMANDLINE_ARGUMENT_QUANTITY" -eq 0 ]; then
+	BASH_COMMONS_COMMANDLINE_ARGUMENTS=(nothing)
 else
-	BASH_COMMONS_COMMANDLINE_ARGUMENT_LIST_ORIGINAL=("$@")
+	BASH_COMMONS_COMMANDLINE_ARGUMENTS=("$@")
 fi
-readonly BASH_COMMONS_COMMANDLINE_ARGUMENT_LIST_ORIGINAL
+readonly BASH_COMMONS_COMMANDLINE_ARGUMENTS
+
+# BASH_COMMONS_COMMAND_BASE: The guessed user input command's executable (without the arguments), this is handy when showing help, where the proper command base can be displayed
+# If ${RUNTIME_SCRIPTDIR} is in ${PATH}, this would be ${RUNTIME_SCRIPTNAME}, if not this would be ./${RUNTIME_SCRIPTPATH_RELATIVE}
+declare BASH_COMMONS_COMMAND_BASE
+declare -a BASH_COMMONS_PATH_DIRECTORIES=()
+IFS=':' read -r -a BASH_COMMONS_PATH_DIRECTORIES <<< "${PATH}" || true # Without this `read` will return 1
+
+declare pathdir
+for pathdir in "${BASH_COMMONS_PATH_DIRECTORIES[@]}"; do
+	if [ "${BASH_COMMONS_EXECUTABLE_DIRECTORY}" == "${pathdir}" ]; then
+		BASH_COMMONS_COMMAND_BASE="${BASH_COMMONS_EXECUTABLE_FILENAME}"
+		break
+	fi
+done
+unset pathdir BASH_COMMONS_PATH_DIRECTORIES
+readonly BASH_COMMONS_COMMAND_BASE="${BASH_COMMONS_COMMAND_BASE:-./${BASH_COMMONS_EXECUTABLE_PATH_RELATIVE}}"
 
 declare -r BASH_COMMONS_PATH_TESTCASES="Test Cases"
-declare -ir BASH_COMMONS_RESULT_SUCCESS=0
-declare -ir BASH_COMMONS_RESULT_FAILURE=1
 
 bash_commons_meta_warn_before_errexit_abort(){
-	local -ir line_error_location=${1}; shift
-	local -ir command_return_status=${1}
+	local -ir line_error_location=${1}; shift # The line number that triggers the error
+	local -r failing_command="${1}"; shift # The failing command
+	local -ir failing_command_return_status=${1} # The failing command's return value
 
 	printf "ERROR: This program has encountered an error and is ending prematurely, contact developer for support.\n" 1>&2
 
 	printf "\n" # Separate paragraphs
 
-	printf "INFO: Technical information: \"The Bash Commons Library\" by default sets Bash's \`errexit\` option, which will prematurely end the program if any command returns error status without being intercepted by the program.  You might need to recheck all the commands that will cause this behavior and if, the situation is intended and unavoidable, unset(\`set +o errexit\`) and reset(\`set -o errexit\`) errexit to escape the causing code section, for more information please refer Bash Manual - Shell Builtin Commands - Modifying Shell Behavior - The Set Builtin - \`-e\`.\n" 1>&2
+	printf "\"The Bash Commons Library\" by default sets Bash's \`errexit\` option, which will prematurely end the program if any command returns error status without being intercepted by the program.  You might need to recheck all the commands that will cause this behavior and if, the situation is intended and unavoidable, unset(\`set +o errexit\`) and reset(\`set -o errexit\`) errexit to escape the causing code section, for more information please refer Bash Manual - Shell Builtin Commands - Modifying Shell Behavior - The Set Builtin - \`-e\`.\n" 1>&2
 
 	printf "\n" # Separate paragraphs
 
-	printf "INFO: Technical information: You might want to customize this message using \`trap\` command, refer Bash Manual - Shell Builtin Commands - Bourne Shell Builtins - \`trap\`\n" 1>&2
+	printf "You might want to customize this message by overriding the \"bash_commons_meta_warn_before_errexit_abort\" function.\n" 1>&2
 
 	printf "\n" # Separate paragraphs
 
-	printf "INFO: Technical information: The error happens at line %s, command return status is %s.\n" "${line_error_location}" "${command_return_status}"
+	printf "Technical information:\n"
+	printf "\n" # Separate list title and items
+	printf "	* The error happens at line %s\n" "${line_error_location}"
+	printf "	* The failing command is \"%s\"\n" "${failing_command}"
+	printf "	* Failing command's return status is %s\n" "${failing_command_return_status}"
+	printf "	* Intepreter info: GNU Bash v%s on %s platform\n" "${BASH_VERSION}" "${MACHTYPE}"
+	printf "\n" # Separate list and further content
+
+	printf "Goodbye.\n"
 	return
 }
-trap 'bash_commons_meta_warn_before_errexit_abort ${LINENO} ${?}' ERR
+trap 'bash_commons_meta_warn_before_errexit_abort ${LINENO} "${BASH_COMMAND}" ${?}' ERR
 
 bash_commons_meta_info_before_normal_exit(){
 	printf -- "------------------------------------\n"
@@ -469,12 +500,12 @@ bash_commons_meta_info_before_normal_exit(){
 trap 'bash_commons_meta_info_before_normal_exit' EXIT
 
 bash_commons_meta_print_help(){
-	local -r bash_commons_file_path="${1}"
+	local -r bash_commons_command_base="${1}"
 
 	printf "# The Bash Commons Library #\n"
 	printf "Source this file to use the library, or run\n"
 	printf "\n"
-	printf "\t%s --unittest\n" "${bash_commons_file_path}"
+	printf "\t%s --unittest\n" "${bash_commons_command_base}"
 	printf "\n"
 	printf "for unittest.\n"
 	return
@@ -666,10 +697,9 @@ bash_commons_meta_unittest(){
 
 bash_commons_meta_main(){
 	local -r bash_commons_file_name="${1}"; shift
-	shift # local -r bash_commons_file_directory="${1}"; shift
-	local -r bash_commons_file_path="${1}"; shift
+	local -r bash_commons_command_base="${1}"; shift
 	local -ir bash_commons_commandline_argument_quantity="${1}"; shift
-	local -a bash_commons_commandline_argument_list="${1}"
+	local -a bash_commons_commandline_argument_list=("${@}")
 	# `local -ar` somehow doesn't work("bash_commons_commandline_argument_list: readonly variable")
 	readonly bash_commons_commandline_argument_list
 
@@ -680,7 +710,7 @@ bash_commons_meta_main(){
 
 	# If no command-line arguments, print help info and exit
 	if [ "${bash_commons_commandline_argument_quantity}" -eq 0 ]; then
-		bash_commons_meta_print_help "${bash_commons_file_path}"
+		bash_commons_meta_print_help "${bash_commons_command_base}"
 		exit 0
 	fi
 
@@ -693,4 +723,4 @@ bash_commons_meta_main(){
 	fi
 }
 
-bash_commons_meta_main "${BASH_COMMONS_EXECUTABLE_FILENAME}" "${BASH_COMMONS_EXECUTABLE_DIRECTORY}" "${BASH_COMMONS_EXECUTABLE_PATH}" "${BASH_COMMONS_COMMANDLINE_ARGUMENT_NUMBER_ORIGINAL}" "${BASH_COMMONS_COMMANDLINE_ARGUMENT_LIST_ORIGINAL}"
+bash_commons_meta_main "${BASH_COMMONS_EXECUTABLE_FILENAME}" "${BASH_COMMONS_COMMAND_BASE}" "${BASH_COMMONS_COMMANDLINE_ARGUMENT_QUANTITY}" "${BASH_COMMONS_COMMANDLINE_ARGUMENTS[@]}"
