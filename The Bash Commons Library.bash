@@ -393,14 +393,8 @@ bash_commons_array_indexed_access_element(){
 bash_commons_array_indexed_get_length(){
 	local -nr array_reference=${1}
 
-	# null array is considered as "unbound variable", disable nounset check temporarily
-	set +o nounset
-	if [ -z "${array_reference}" ]; then
-		printf "0"
-	else
-		printf "%s" ${#array_reference[@]}
-	fi
-	set -o nounset
+	printf "%s" ${#array_reference[@]}
+
 	return ${BASH_COMMONS_RESULT_SUCCESS}
 }
 
@@ -654,7 +648,6 @@ bash_commons_meta_unittest_array_indexed_length(){
 		else
 			test_result_holder=${BASH_COMMONS_RESULT_FAILURE}
 		fi
-		test_result_holder=${BASH_COMMONS_RESULT_SUCCESS}
 	else
 		test_result_holder=${BASH_COMMONS_RESULT_FAILURE}
 	fi
