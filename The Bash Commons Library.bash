@@ -401,7 +401,7 @@ bash_commons_array_indexed_get_length(){
 bash_commons_array_indexed_element_pop(){
 	local -n array_reference=${1}
 
-	if [ -z "${array_reference}" ]; then
+	if [ "${#array_reference[@]}" -eq 0 ]; then
 		printf "The Bash Commons Library - bash_commons_array_indexed_element_pop - Error: array is null.\n" 1>&2
 		return ${BASH_COMMONS_RESULT_FAILURE}
 	else
@@ -642,8 +642,8 @@ bash_commons_meta_unittest_array_indexed_length(){
 	local -ar array_1=(1 2 3 4 5)
 	local -ar array_null=()
 
-	if [ "$(bash_commons_array_indexed_get_length array_1)" == 5 ]; then
-		if [ "$(bash_commons_array_indexed_get_length array_null)" == 0 ]; then
+	if [ "$(bash_commons_array_indexed_get_length array_1)" -eq 5 ]; then
+		if [ "$(bash_commons_array_indexed_get_length array_null)" -eq 0 ]; then
 			test_result_holder=${BASH_COMMONS_RESULT_SUCCESS}
 		else
 			test_result_holder=${BASH_COMMONS_RESULT_FAILURE}
